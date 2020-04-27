@@ -59,7 +59,11 @@ header .site-name {
 }
 
 .header__sub-title {
-    font-size: 0.3em !important
+    font-size: 1em !important
+}
+
+.header__menu {
+    padding-inline-start: 0px !important;
 }
 
 nav {

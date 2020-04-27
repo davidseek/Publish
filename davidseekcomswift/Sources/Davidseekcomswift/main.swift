@@ -22,6 +22,7 @@ struct Davidseekcomswift: Website {
     var description = "Senior iOS Developer"
     var language: Language { .english }
     var imagePath: Path? { nil }
+    
 }
 
 private extension Node where Context == HTML.BodyContext {
@@ -63,7 +64,7 @@ private extension Node where Context == HTML.BodyContext {
                 .nav(
                     .class("site-name"),
                     .a(
-                        .href("/"),
+                        .href("/blog/"),
                         .text(context.site.name)
                     )
                 )
@@ -79,7 +80,7 @@ private extension Node where Context == HTML.BodyContext {
                     .wrapper(
                         .a(
                             .class("site-name"),
-                            .href("/"),
+                            .href("/blog/"),
                             .text(context.site.name)
                         ),
                         .wrapper(
@@ -88,7 +89,9 @@ private extension Node where Context == HTML.BodyContext {
                         ),
                         .if(sectionIDs.count > 1,
                             .nav(
-                                .ul(.forEach(sectionIDs) { section in
+                                .ul(
+                                    .class("header__menu"),
+                                    .forEach(sectionIDs) { section in
                                     .li(
                                         .a(
                                             .class(section == selectedSection ? "selected" : ""),
@@ -136,6 +139,37 @@ struct Factory<Site: Website>: HTMLFactory {
     }
     
     func makeSectionHTML(for section: Section<Site>, context: PublishingContext<Site>) throws -> HTML {
+        
+        if let id = section.id as? Davidseekcomswift.SectionID, id == .cv {
+            
+            let item: Item<Site> = Item(
+                path: "my-favorite-recipe",
+                sectionID: id as! Site.SectionID,
+                metadata: Davidseekcomswift.ItemMetadata() as! Site.ItemMetadata,
+//                metadata: DeliciousRecipes.ItemMetadata(
+//                    ingredients: ["Chocolate", "Coffee", "Flour"],
+//                    preparationTime: 10 * 60
+//                ),
+                tags: ["favorite", "featured"],
+                content: Content(
+                    title: "Check out my favorite recipe!",
+                    body: "Lorem ipsum"
+                )
+            )
+            
+            return HTML(
+                    .head(for: item, on: context.site),
+                    .body(
+                        .myHeader(for: context),
+                        .wrapper(
+                            .article(
+                                .contentBody(item.body)
+                            )
+                        )
+                    )
+                )
+        }
+        
         return HTML(
             .head(for: section, on: context.site),
             .body(
@@ -182,4 +216,7 @@ extension Theme {
 }
 
 // This will generate your website using the built-in Foundation theme:
-try Davidseekcomswift().publish(withTheme: .davidseek)
+try Davidseekcomswift()
+    .publish(
+        withTheme: .davidseek)
+        //at: Path("/blog/"))
